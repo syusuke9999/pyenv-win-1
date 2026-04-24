@@ -2,9 +2,9 @@
 setlocal
 chcp 65001 >nul 2>&1
 
-set "pyenv=cscript //nologo "%~dp0..\libexec\pyenv.vbs""
+set "pyenv=powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0..\libexec\pyenv.ps1""
 
-:: if 'pyenv' called alone, then run pyenv.vbs
+:: if 'pyenv' called alone, then run pyenv.ps1
 if [%1]==[] (
   %pyenv% || goto :error
   exit /b
@@ -17,7 +17,7 @@ if not [%skip%]==[0] set "skip_arg=skip=%skip% "
 
 if /i [%1%2]==[version] call :check_path
 
-:: use pyenv.vbs to aid resolving absolute path of "active" version into 'bindir'
+:: use pyenv.ps1 to aid resolving absolute path of "active" version into 'bindir'
 set "bindir="
 set "extrapaths="
 for /f "%skip_arg%delims=" %%i in ('%pyenv% vname') do call :extrapath "%~dp0..\versions\%%i"
@@ -47,7 +47,7 @@ if /i [%1]==[help] (
   exit /b
 )
 
-:: let pyenv.vbs handle these
+:: let pyenv.ps1 handle these
 set "commands=rehash global local version vname version-name versions commands shims which whence help --help"
 for %%a in (%commands%) do (
   if /i [%1]==[%%a] (
@@ -139,8 +139,8 @@ if exist "%exe%.bat" (
 ) else if exist "%exe%.cmd" (
   set "exe=call "%exe%.cmd""
 
-) else if exist "%exe%.vbs" (
-  set "exe=cscript //nologo "%exe%.vbs""
+) else if exist "%exe%.ps1" (
+  set "exe=powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%exe%.ps1""
 
 ) else if exist "%exe%.lnk" (
   set "exe=start '' "%exe%.bat""

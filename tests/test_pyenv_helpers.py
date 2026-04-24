@@ -66,8 +66,8 @@ def pyenv_setup(settings):
              r'bin\pyenv.bat',
              r'bin\pyenv.ps1',
              r'libexec\pyenv-shell.bat',
-             r'libexec\libs\pyenv-install-lib.vbs',
-             r'libexec\libs\pyenv-lib.vbs']
+             r'libexec\libs\pyenv-install-lib.ps1',
+             r'libexec\libs\pyenv-lib.ps1']
     for f in files:
         shutil.copy(src_path.joinpath(f), Path(pyenv_path, f))
     versions_dir = Path(pyenv_path, r'versions')

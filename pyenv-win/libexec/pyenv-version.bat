@@ -9,4 +9,4 @@ echo To obtain only the version string, use `pyenv vname' or `pyenv version-name
 EXIT /B
 )
 
-:: Implementation of this command is in the pyenv.vbs file
+:: Implementation of this command is in the pyenv.ps1 file

@@ -1,22 +1,26 @@
-$OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
+try {
+    $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
+} catch {
+}
 
 If (($Args.Count -ge 2) -and ($Args[0] -eq "shell")) {
     if ($Args[1] -eq "--help") {
-        pyenv.bat @Args
+        & "$PSScriptRoot\pyenv.bat" @Args
         Exit $LastExitCode
     } elseif ($Args[1] -eq "--unset") {
         If (Test-Path Env:PYENV_VERSION) {
             Remove-Item Env:PYENV_VERSION
         }
     } else {
-        $Output = (cscript //nologo "$PSScriptRoot\..\libexec\pyenv.vbs" @Args)
+        $global:LASTEXITCODE = 0
+        $Output = (& "$PSScriptRoot\..\libexec\pyenv.ps1" @Args)
         if ($LastExitCode -ne 0) {
             $Output -join [Environment]::NewLine
             Exit $LastExitCode
         }
-        $Env:PYENV_VERSION = $Output
+        $Env:PYENV_VERSION = ($Output -join [Environment]::NewLine)
     }
 } Else {
-    pyenv.bat @Args
+    & "$PSScriptRoot\pyenv.bat" @Args
     Exit $LastExitCode
 }

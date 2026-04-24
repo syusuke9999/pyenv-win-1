@@ -8,4 +8,4 @@ echo Lists all Python versions found in `$PYENV_ROOT/versions/*'.
 EXIT /B
 )
 
-:: Implementation of this command is in the pyenv.vbs file
+:: Implementation of this command is in the pyenv.ps1 file

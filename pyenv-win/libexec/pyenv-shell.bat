@@ -1,6 +1,8 @@
 @echo off
 setlocal
 
+set "pyenv=powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0pyenv.ps1""
+
 set "skip=-1"
 for /f "delims=" %%i in ('echo skip') do (call :incrementskip)
 if [%skip%]==[0] set "skip_arg="
@@ -28,8 +30,8 @@ if [%1]==[] (
   endlocal && set "PYENV_VERSION="
 
 ) else (
-  cscript //nologo "%~dp0pyenv.vbs" shell %* 1> nul || goto :error
-  for /f "%skip_arg%delims=" %%a in ('cscript //nologo "%~dp0pyenv.vbs" shell %*') do (
+  %pyenv% shell %* 1> nul || goto :error
+  for /f "%skip_arg%delims=" %%a in ('%pyenv% shell %*') do (
     endlocal && set "PYENV_VERSION=%%a"
   )
 )
@@ -41,6 +43,6 @@ set /a skip=%skip%+1
 goto :eof
 
 :error
-cscript //nologo "%~dp0pyenv.vbs" shell %*
+%pyenv% shell %*
 exit /b %errorlevel%
 

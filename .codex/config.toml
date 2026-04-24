@@ -1,0 +1,60 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+# --- 承認まわり: 都度の許可プロンプトを出さない -----------------------------
+# "never" にすると Codex は承認を求めずに実行する。
+
+approval_policy = "never"
+
+# --- サンドボックス: ワークスペース(= 開いているプロジェクト)だけ書込許可 ---
+# "danger-full-access" は使わない。これにより、ホームや OS 全体など
+# 「関係ないローカルファイル」の書き換えは防がれる。
+
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+# Web 検索・npm/pip 等の依存取得・GitHub API 参照のためネットは許可する。
+# Codex が「勝手に」別のリモートのファイルを書き換える現実的な経路は
+# 開いているプロジェクト外には存在しないため、この粒度で十分。
+
+network_access = true
+
+# /tmp と $TMPDIR も書込み可のまま(ビルド・一時ファイル作成で必要)
+
+exclude_tmpdir_env_var = false
+exclude_slash_tmp = false
+
+# 必要に応じてフォーク先ディレクトリ以外にも書込許可ルートを足せる。
+# writable_roots = ["/Users/you/projects/another-repo"]
+
+# --- Web 検索を有効化(情報収集は禁じない要件) -------------------------------
+# "live" で最新ページを取得。"cached" にすると OpenAI 側のインデックスのみ。
+
+web_search = "live"
+
+[tools]
+web_search = true
+view_image = true
+
+# --- 開いたプロジェクトを信頼済みにする(.codex/ のプロジェクト設定も有効化) -
+# クローンしたフォークのパスを書く(複数書いてよい)。
+# "trusted" にすると初回の「このプロジェクトを信頼しますか?」も出なくなる。
+# [projects."/Users/you/projects/your-fork"]
+# trust_level = "trusted"
+
+# --- 履歴・細かい挙動 --------------------------------------------------------
+[history]
+persistence = "save-all"
+
+# バーストペースト検出などは好みに応じて
+disable_paste_burst = false
+
+features.fast_mode = true
+
+model_reasoning_effort = "xhigh"
+
+personality = "friendly"
+
+plan_mode_reasoning_effort = "xhigh"
+
+service_tier = "fast"
+

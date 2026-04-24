@@ -9,4 +9,4 @@ echo selected. To obtain the full path, use `pyenv which pip'.
 EXIT /B
 )
 
-:: Implementation of this command is in the pyenv.vbs file
+:: Implementation of this command is in the pyenv.ps1 file

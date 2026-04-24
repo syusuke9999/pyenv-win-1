@@ -27,4 +27,4 @@ echo 'pyenv local 3.7.0 2.7.15'
 EXIT /B
 )
 
-:: Implementation of this command is in the pyenv.vbs file
+:: Implementation of this command is in the pyenv.ps1 file
