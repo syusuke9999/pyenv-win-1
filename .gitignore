@@ -117,3 +117,4 @@ exec.bat
 # git
 *.orig
 .codex/
+.codex/config.toml

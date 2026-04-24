@@ -229,9 +229,6 @@ function Get-Extensions {
             $extensions += '.PYW;'
         }
     }
-    if ($extensions -notmatch '(?i);\.PS1;') {
-        $extensions += '.PS1;'
-    }
 
     while ($extensions.Contains(';;')) {
         $extensions = $extensions.Replace(';;', ';')

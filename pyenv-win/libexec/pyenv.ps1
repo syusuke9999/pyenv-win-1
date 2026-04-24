@@ -44,7 +44,7 @@ function Show-PyenvHelp {
     $versionFile = Join-Path $script:PyenvParent '.version'
     $version = ''
     if (Test-Path -LiteralPath $versionFile -PathType Leaf) {
-        $version = (Get-Content -LiteralPath $versionFile -Raw).Trim()
+        $version = Get-Content -LiteralPath $versionFile -Raw
     }
 
     Write-Output "pyenv $version"

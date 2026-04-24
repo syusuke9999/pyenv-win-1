@@ -10,7 +10,7 @@ foreach ($mirror in $script:Mirrors) {
 function Show-UpdateHelp {
     Write-Output 'Usage: pyenv update [--ignore]'
     Write-Output ''
-    Write-Output '  --ignore  Ignores any HTTP/PowerShell errors that occur during downloads.'
+    Write-Output '  --ignore  Ignores any HTTP/VBScript errors that occur during downloads.'
     Write-Output ''
     Write-Output "Updates the internal database of python installer URL's."
     Write-Output ''
