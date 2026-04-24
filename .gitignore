@@ -110,7 +110,7 @@ shims/
 version
 versions/
 exec.bat
-
+.vscode/
 # PyCharm
 .idea/
 
