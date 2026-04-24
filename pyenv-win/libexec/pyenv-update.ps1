@@ -44,6 +44,10 @@ function Resolve-LinkUrl {
         [Parameter(Mandatory = $true)][string]$Href
     )
 
+    if (-not $BaseUrl.EndsWith('/')) {
+        $BaseUrl = "$BaseUrl/"
+    }
+
     return ([Uri]::new([Uri]$BaseUrl, $Href)).AbsoluteUri
 }
 
