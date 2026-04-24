@@ -51,12 +51,29 @@ function Invoke-NativeCommand {
         [string[]]$Arguments = @()
     )
 
-    & $FilePath @Arguments
+    & $FilePath @Arguments | Out-Null
     if ($null -eq $global:LASTEXITCODE) {
         return 0
     }
 
     return $global:LASTEXITCODE
+}
+
+function Test-InstalledVersion {
+    param(
+        [Parameter(Mandatory = $true)]$Params
+    )
+
+    $installPath = $Params[$script:IP_InstallPath]
+    if (-not (Test-Path -LiteralPath $installPath -PathType Container)) {
+        return $false
+    }
+
+    if ($Params[$script:LV_Code] -match '^\d+(?:\.\d+)+') {
+        return (Test-Path -LiteralPath (Join-Path $installPath 'python.exe') -PathType Leaf)
+    }
+
+    return ((Get-ChildItem -LiteralPath $installPath -Force -ErrorAction SilentlyContinue | Measure-Object).Count -gt 0)
 }
 
 function Invoke-DeepExtract {
@@ -71,6 +88,11 @@ function Invoke-DeepExtract {
     }
     $installPath = $Params[$script:IP_InstallPath]
     $exitCode = -1
+
+    if ((Test-Path -LiteralPath $cachePath -PathType Container) -and
+        ((Get-ChildItem -LiteralPath $cachePath -Filter '*.msi' -File -Recurse -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0)) {
+        Remove-Item -LiteralPath $cachePath -Recurse -Force
+    }
 
     if (-not (Test-Path -LiteralPath $cachePath -PathType Container)) {
         if ($Web) {
@@ -107,7 +129,13 @@ function Invoke-DeepExtract {
     Get-ChildItem -LiteralPath $cachePath -Directory -ErrorAction SilentlyContinue |
         Remove-Item -Recurse -Force
 
-    foreach ($file in Get-ChildItem -LiteralPath $cachePath -File) {
+    $componentFiles = @(Get-ChildItem -LiteralPath $cachePath -Filter '*.msi' -File -ErrorAction SilentlyContinue)
+    if ($componentFiles.Count -eq 0) {
+        Write-Output ':: [Error] :: no component MSI files were found in the extracted installer.'
+        return 1
+    }
+
+    foreach ($file in $componentFiles) {
         $baseName = $file.BaseName.ToLowerInvariant()
         $exitCode = Invoke-NativeCommand -FilePath 'msiexec' -Arguments @('/quiet', '/a', $file.FullName, "TargetDir=$installPath")
         if ($exitCode -ne 0) {
@@ -152,6 +180,11 @@ function Invoke-DeepExtract {
                 Copy-Item -LiteralPath $venvLauncherExe -Destination (Join-Path (Split-Path -Parent $venvLauncherExe) "pythonw$suffix.exe") -Force
             }
         }
+    }
+
+    if (-not (Test-InstalledVersion -Params $Params)) {
+        Write-Output ":: [Error] :: installer completed but '$installPath' was not created correctly."
+        return 1
     }
 
     return 0
@@ -246,7 +279,7 @@ function Install-Version {
     Ensure-Folder -Path $installFileFolder
     Ensure-Folder -Path (Split-Path -Parent $installPath)
 
-    if (Test-Path -LiteralPath $installPath -PathType Container) {
+    if (Test-InstalledVersion -Params $Params) {
         return
     }
 
@@ -284,7 +317,7 @@ function Install-Version {
         Pop-Location
     }
 
-    if ($exitCode -eq 0) {
+    if (($exitCode -eq 0) -and (Test-InstalledVersion -Params $Params)) {
         Write-Output ":: [Info] :: completed! $($Params[$script:LV_Code])"
         if ($Register) {
             Register-PyenvVersion -Version $Params[$script:LV_Code] -InstallPath $installPath

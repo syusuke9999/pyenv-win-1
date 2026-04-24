@@ -131,6 +131,15 @@ function Clear-InstallArtifacts {
     if (Test-Path -LiteralPath $Params[$script:IP_InstallFile]) {
         Remove-Item -LiteralPath $Params[$script:IP_InstallFile] -Force
     }
+
+    foreach ($cachePath in @(
+        (Join-Path $script:DirCache $Params[$script:LV_Code]),
+        (Join-Path $script:DirCache "$($Params[$script:LV_Code])-webinstall")
+    )) {
+        if (Test-Path -LiteralPath $cachePath) {
+            Remove-Item -LiteralPath $cachePath -Recurse -Force
+        }
+    }
 }
 
 function ConvertTo-PyenvBool {
